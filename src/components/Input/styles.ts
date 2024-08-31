@@ -1,21 +1,49 @@
-import { StyleSheet } from 'react-native';
-import { THEME } from '../../styles/theme';
+import styled, { css } from 'styled-components';
 
-export const styles = StyleSheet.create({
-	container: {
-		alignItems: 'center',
-		justifyContent: 'flex-start',
-		flexDirection: 'row',
-		backgroundColor: THEME.COLORS.GREY_200,
-		padding: 12,
-		borderRadius: 6,
-		gap: 10,
-	},
-	input: {
-		flex: 1,
-		color: THEME.COLORS.GREY_700,
-		fontFamily: THEME.FONTS.ROBOTO_REGULAR,
-		fontSize: 14,
-		lineHeight: 18,
+interface IInputProps {
+	border: 'gray-400' | 'yellow-dark';
+	grow?: 'auto' | 'fill';
+}
+export const Container = styled.span<IInputProps>`
+	${({ grow }) =>
+		grow === 'auto' &&
+		css`
+			max-width: 60px;
+		`}
+	${({ grow }) =>
+		grow === 'fill' &&
+		css`
+			flex: 1%;
+		`}
+	span {
+		display: flex;
+		padding: 12px;
+		border-radius: 4px;
+		border: solid 1px ${props => props.theme[props.border]};
+		background-color: ${props => props.theme['gray-300']};
+		&:focus-within {
+			border-color: ${props => props.theme['yellow-dark']};
+		}
+		input {
+			grid-area: input;
+			font-size: 0.875rem;
+			background-color: transparent;
+			width: 100%;
+			border: none;
+			&:focus-visible {
+				outline: none;
+			}
+		}
+		em {
+			grid-area: message;
+			font-size: 0.75rem;
+		}
 	}
-});
+`;
+
+export const ErrorMessage = styled.em`
+	grid-area: error;
+	font-size: 0.675rem;
+	font-weight: 400;
+	color: red;
+`;

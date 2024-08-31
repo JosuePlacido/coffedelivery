@@ -1,40 +1,45 @@
-import {
-	Image,
-	View,
-	Text,
-	Pressable,
-	PressableProps,
-	TouchableOpacity,
-	TouchableOpacityProps
-} from "react-native";
+import { ShoppingCart } from 'phosphor-react';
+import { ICoffee } from '../../contexts/cart';
+import { CartButton, Container, PriceDisplay } from './styles';
+import { InputNumber } from '../InputNumer';
+import { useRef } from 'react';
+import { useCart } from '../../hooks/useCart';
 
-import { styles } from "./styles";
-import { ICoffee } from "../../models/Coffee";
-import Animated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
-
-type Props = TouchableOpacityProps & {
-	item: ICoffee;
+type Props = {
+	coffee: ICoffee;
 };
-const AnimatedPressable = Animated.createAnimatedComponent(TouchableOpacity);
-export function CoffeeCard({ item, ...rest }: Props) {
+export function CoffeeCard({ coffee }: Props) {
+	const { addProductCart } = useCart();
+	const refCount = useRef(1);
+
+	function handleChanngeCount(newCount: number) {
+		refCount.current = newCount;
+	}
+
+	function handleAddCoffeToCart() {
+		addProductCart({
+			...coffee,
+			count: refCount.current
+		});
+	}
+
 	return (
-		<AnimatedPressable
-			entering={FadeInUp}
-			exiting={FadeOutUp}
-			style={styles.container}
-			{...rest}
-		>
-			<Image
-				resizeMode="contain"
-				style={styles.img}
-				source={item.thumbnail}
-			/>
-			<Text style={styles.title}>{item.title}</Text>
-			<Text style={styles.description}>{item.description}</Text>
-			<Text style={styles.price}>
-				<Text style={styles.RS}>R$</Text>{" "}
-				{(item.price / 100).toFixed(2).replace(".", ",")}
-			</Text>
-		</AnimatedPressable>
+		<Container>
+			<img src={coffee.thumbnail} alt="" />
+			<span>{coffee.type}</span>
+			<h3>{coffee.title}</h3>
+			<p>{coffee.description}</p>
+			<PriceDisplay>
+				R$
+				<h1>{(coffee.price / 100).toFixed(2).replace('.', ',')}</h1>
+				<InputNumber
+					value={refCount.current}
+					updateValue={handleChanngeCount}
+				/>
+				<CartButton onClick={handleAddCoffeToCart}>
+					<ShoppingCart weight="fill" size={20} />
+				</CartButton>
+			</PriceDisplay>
+		</Container>
 	);
 }

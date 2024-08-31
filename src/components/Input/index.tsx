@@ -1,68 +1,30 @@
-import {
-	NativeSyntheticEvent,
-	Text,
-	TextInput,
-	TextInputChangeEventData,
-	TextInputFocusEventData,
-	TextInputProps,
-	View
-} from "react-native";
-import { styles } from "./styles";
-import { useRef, useState } from "react";
-import { ButtonIcon } from "../ButtonIcon";
-import { MagnifyingGlass } from "phosphor-react-native";
-import { THEME } from "../../styles/theme";
+import { forwardRef, InputHTMLAttributes, LegacyRef, useState } from 'react';
+import { Container, ErrorMessage } from './styles';
+import { FieldError } from 'react-hook-form';
 
-export function Input({
-	value,
-	onBlur,
-	onFocus,
-	onChangeText,
-	...rest
-}: TextInputProps) {
-	const refText = useRef(value);
-	const [state, setState] = useState<"DEFAULT" | "FOCUSED" | "FILLED">(
-		!!value ? "FILLED" : "DEFAULT"
-	);
+interface IInputProps extends InputHTMLAttributes<HTMLInputElement> {
+	grow?: 'auto' | 'fill';
+	error?: FieldError;
+	opcional?: boolean;
+}
 
-	function handleFocus(event: NativeSyntheticEvent<TextInputFocusEventData>) {
-		setState("FOCUSED");
-		onFocus && onFocus(event);
-	}
-
-	function handleChangeText(text: string) {
-		refText.current = text;
-		onChangeText && onChangeText(text);
-	}
-	function handleBlur(e: NativeSyntheticEvent<TextInputFocusEventData>) {
-		setState(!!refText.current ? "FILLED" : "DEFAULT");
-		onBlur && onBlur(e);
+export const Input = forwardRef(function TextInput(
+	{ grow, error, opcional, ...props }: IInputProps,
+	ref: LegacyRef<HTMLInputElement>
+) {
+	const [border, setBorder] = useState(!!props.value);
+	function handleBlur(event: React.FocusEvent<HTMLInputElement, Element>) {
+		setBorder(event.target.value?.length > 0);
+		if (props.onBlur) props.onBlur(event);
 	}
 
 	return (
-		<View style={styles.container}>
-			<MagnifyingGlass
-				weight="regular"
-				color={
-					state === "DEFAULT"
-						? THEME.COLORS.GREY_400
-						: state === "FILLED"
-						? THEME.COLORS.YELLOW_DARK
-						: THEME.COLORS.YELLOW
-				}
-			/>
-			<TextInput
-				style={styles.input}
-				value={value}
-				onBlur={handleBlur}
-				onFocus={handleFocus}
-				cursorColor={rest.cursorColor || THEME.COLORS.YELLOW}
-				onChangeText={handleChangeText}
-				placeholderTextColor={
-					rest.placeholderTextColor || THEME.COLORS.GREY_400
-				}
-				{...rest}
-			/>
-		</View>
+		<Container grow={grow} border={border ? 'yellow-dark' : 'gray-400'}>
+			<span>
+				<input ref={ref} onBlur={handleBlur} {...props} />
+				{opcional && <em>Opcional</em>}
+			</span>
+			{error && <ErrorMessage>{error.message}</ErrorMessage>}
+		</Container>
 	);
-}
+});

@@ -1,55 +1,48 @@
-import { StyleSheet } from 'react-native';
-import { THEME } from '../../styles/theme';
+import styled from 'styled-components';
 
-export const styles = StyleSheet.create({
-	container: {
-		width: '100%',
-		backgroundColor: THEME.COLORS.GREY_900,
-		borderWidth: 1,
-		borderColor: THEME.COLORS.GREY_100,
-		flexDirection: 'row',
-		paddingVertical: 16,
-		paddingHorizontal: 32,
-		gap: 20
-	},
-	img: {
-		height: 64,
-		width: 64,
-		borderRadius: 64,
-	},
-	title: {
-		color: THEME.COLORS.GREY_100,
-		fontFamily: THEME.FONTS.ROBOTO_REGULAR,
-		fontSize: 16,
-		lineHeight: 16 * 1.3,
-	},
-	price: {
-		color: THEME.COLORS.GREY_100,
-		fontFamily: THEME.FONTS.BALOO_BOLD,
-		fontSize: 16,
-		lineHeight: 16 * 1.3
-	},
-	size: {
-		color: THEME.COLORS.GREY_400,
-		fontFamily: THEME.FONTS.ROBOTO_REGULAR,
-		fontSize: 14,
-		lineHeight: 14 * 1.3
-	},
-	Header: {
-		flexDirection: "row",
-		alignItems: 'baseline',
-		justifyContent: "space-between"
-	},
-	footer: {
-		flexDirection: "row",
-		gap: 10
-	},
-	swipeableRemove: {
-		paddingHorizontal: 32,
-		paddingVertical: 16,
-		backgroundColor: THEME.COLORS.RED_LIGHT,
-		alignItems: 'flex-start',
-		justifyContent: 'center',
-		width: '100%'
-	},
-});
+export const Container = styled.article`
+	display: flex;
+	align-items: flex-start;
+	background-color: ${({ theme }) => theme['gray-300']};
+	padding: 8px 12px;
+	gap: 1.25rem;
+	& > div {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		span {
+			display: flex;
+			gap: 8px;
+		}
+	}
+	img {
+		height: 64px;
+		width: 64px;
+		border-radius: 64px;
+	}
+`;
+
+export const PriceDisplay = styled.span`
+	font-weight: bold;
+	margin-left: auto;
+`;
+export const CartButton = styled.button`
+	background-color: ${props => props.theme['gray-400']};
+	border: none;
+	padding: 8px;
+	border-radius: 6px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	color: ${props => props.theme['gray-800']};
+	svg {
+		color: ${({ theme }) => theme['purple']};
+		margin-right: 4px;
+	}
+
+	transition: background-color 0.1s;
+	&:hover {
+		background-color: ${props => props.theme['gray-500']};
+	}
+`;

@@ -1,67 +1,44 @@
-import { Image, View, Text } from "react-native";
-
-import { styles } from "./styles";
-import { ICartCoffee, ICoffee } from "../../models/Coffee";
-import { InputNumber } from "../InputNumber";
-import { ReactNode } from "react";
-import { ButtonIcon } from "../ButtonIcon";
-import { useCart } from "../../hooks/useCart";
-import { Swipeable } from "react-native-gesture-handler";
-import { Trash } from "phosphor-react-native";
-import { THEME } from "../../styles/theme";
+import { Trash } from 'phosphor-react';
+import { ICartCoffee } from '../../contexts/cart';
+import { CartButton, Container, PriceDisplay } from './styles';
+import { InputNumber } from '../InputNumer';
+import { useCart } from '../../hooks/useCart';
 
 type Props = {
-	item: ICartCoffee;
+	coffee: ICartCoffee;
 };
+export function CartItem({ coffee }: Props) {
+	const { removeProductCart, increaseCoffeeCount, decreaseCoffeeCount } =
+		useCart();
 
-export function CartItem({ item }: Props) {
-	const { removeProductCart, addProductCart } = useCart();
-	function handleChangeCountCart(count: number) {
-		const diff = count - item.count;
-		addProductCart({
-			...item,
-			count: diff
-		});
+	function handleChanngeCount(newCount: number) {
+		console.log(newCount, coffee.count);
+		if (newCount > coffee.count) increaseCoffeeCount(coffee.id);
+		else decreaseCoffeeCount(coffee.id);
+	}
+
+	function handleRemoveCoffee() {
+		removeProductCart(coffee.id);
 	}
 
 	return (
-		<Swipeable
-			overshootLeft={false}
-			leftThreshold={150}
-			onSwipeableOpen={() => removeProductCart(item.id)}
-			renderRightActions={() => null}
-			renderLeftActions={() => (
-				<View style={styles.swipeableRemove}>
-					<Trash size={32} color={THEME.COLORS.RED_DARK} />
-				</View>
-			)}
-		>
-			<View style={styles.container}>
-				<Image
-					resizeMode="contain"
-					style={styles.img}
-					source={item.thumbnail}
-				/>
-				<View style={{ flex: 1 }}>
-					<View style={styles.Header}>
-						<Text style={styles.title}>{item.title}</Text>
-						<Text style={styles.price}>
-							R$ {(item.price / 100).toFixed(2).replace(".", ",")}
-						</Text>
-					</View>
-					<Text style={styles.size}>{item.size}</Text>
-					<View style={styles.footer}>
-						<InputNumber
-							value={item.count}
-							updateValue={handleChangeCountCart}
-						/>
-						<ButtonIcon
-							variant="TRASH"
-							onPress={() => removeProductCart(item.id)}
-						/>
-					</View>
-				</View>
-			</View>
-		</Swipeable>
+		<Container>
+			<img src={coffee.thumbnail} alt="" />
+			<div>
+				<p>{coffee.title}</p>
+				<span>
+					<InputNumber
+						value={coffee.count}
+						updateValue={handleChanngeCount}
+					/>
+					<CartButton type="button" onClick={handleRemoveCoffee}>
+						<Trash size={20} /> REMOVER
+					</CartButton>
+				</span>
+			</div>
+			<PriceDisplay>
+				R$ {(coffee.price / 100).toFixed(2).replace('.', ',')}
+			</PriceDisplay>
+		</Container>
 	);
 }
